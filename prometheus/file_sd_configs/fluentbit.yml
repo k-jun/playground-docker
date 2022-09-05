@@ -1,0 +1,6 @@
+- labels:
+    service: samuraidev
+    tool_subdomain_suffix: prod-dev-samurai
+    usage: web:api:301
+  targets:
+  - fluentbit:2020

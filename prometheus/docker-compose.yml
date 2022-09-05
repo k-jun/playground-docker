@@ -1,0 +1,20 @@
+version: "3" 
+services:
+  prometheus:
+    image: prom/prometheus:v2.7.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - .:/etc/prometheus/
+  alertmanager:
+    image: prom/alertmanager:v0.16.1
+    ports:
+      - "9093:9093"
+    # volumes:
+    #   - .:/etc/alertmanager/
+  fluentbit:
+    image: fluent/fluent-bit:1.9.6
+    ports:
+      - "2020:2020"
+    volumes:
+      - ./fluentbit.conf:/fluent-bit/etc/fluent-bit.conf

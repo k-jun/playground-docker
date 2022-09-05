@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 1m
+  scrape_timeout: 10s
+  evaluation_interval: 1m
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - alertmanager:9093
+    scheme: http
+    timeout: 10s
+rule_files:
+  - /etc/prometheus/alert.rules.d/*.rules
+
+scrape_configs:
+  - job_name: 'file_sd_fluentbit'
+    metrics_path: /api/v1/metrics/prometheus
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/file_sd_configs/fluentbit.yml
+    relabel_configs:
+      - source_labels: [__address__]
+        separator: ;
+        regex: (.+):\d+
+        target_label: hostname
+        replacement: $1
+        action: replace

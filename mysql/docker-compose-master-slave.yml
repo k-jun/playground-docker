@@ -1,0 +1,30 @@
+version: '3'
+services:
+  mysql-master:
+    image: mysql:5.7
+    ports:
+          - 3306:3306
+    volumes:
+      # - ./master-db/scripts/:/docker-entrypoint-initdb.d/
+      - ./master-db/my.cnf:/etc/mysql/conf.d/my.cnf
+      # - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mysqldb
+  mysql-slave:
+    image: mysql:5.7
+    depends_on:
+      - mysql-master
+    ports:
+          - 3307:3306
+    volumes:
+      # - ./slave-db/scripts/:/docker-entrypoint-initdb.d/
+      - ./slave-db/my.cnf:/etc/mysql/conf.d/my.cnf
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        # MYSQL_DATABASE: mysqldb
+
+# volumes:
+#   mysql-data:
+#     external:
+#       name: mysql-volume

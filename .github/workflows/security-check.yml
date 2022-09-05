@@ -1,0 +1,17 @@
+name: security-check
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  grep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: grep check
+        run: |
+          for i in `ls -a1 | grep -v -e '^\.\.$' -e '^\.$' -e '^\.github$' -e '^workflow$'`; do
+            ! egrep -r '(dena|nintendo)' "./$i" || exit 1
+          done
