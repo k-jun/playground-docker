@@ -1,0 +1,5 @@
+type: S3
+config:
+  bucket: ""
+  endpoint: s3.ap-northeast-1.amazonaws.com
+  aws_sdk_auth: true

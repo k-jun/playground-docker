@@ -1,20 +1,48 @@
 version: "3" 
 services:
   prometheus:
-    image: prom/prometheus:v2.7.1
+    image: prom/prometheus:v2.13.1
     ports:
       - "9090:9090"
     volumes:
       - .:/etc/prometheus/
-  alertmanager:
-    image: prom/alertmanager:v0.24.0
-    ports:
-      - "9093:9093"
-    # volumes:
-    #   - .:/etc/alertmanager/
-  fluentbit:
-    image: fluent/fluent-bit:1.9.6
-    ports:
-      - "2020:2020"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+      - --storage.tsdb.max-block-duration=2h
+      - --storage.tsdb.min-block-duration=2h
+  store:
+    image: thanosio/thanos:v0.28.1
     volumes:
-      - ./fluentbit.conf:/fluent-bit/etc/fluent-bit.conf
+      - .:/etc/prometheus/
+    command:
+      - sidecar
+      - --tsdb.path=/etc/prometheus
+      - --prometheus.url=http://prometheus:9090
+      - --objstore.config-file=/etc/prometheus/bucket_config.yaml
+      - --http-address=0.0.0.0:19191
+      - --grpc-address=0.0.0.0:19090 
+  query:
+    image: thanosio/thanos:v0.28.1
+    ports:
+      - "19192:19192"
+    volumes:
+      - .:/etc/prometheus/
+    command:
+      - query
+      - --http-address=0.0.0.0:19192
+      - --store=store:19090
+  # alertmanager:
+  #   image: prom/alertmanager:v0.24.0
+  #   ports:
+  #     - "9093:9093"
+  #   # volumes:
+  #   #   - .:/etc/alertmanager/
+  # fluentbit:
+  #   image: fluent/fluent-bit:1.9.6
+  #   ports:
+  #     - "2020:2020"
+  #   volumes:
+  #     - ./fluentbit.conf:/fluent-bit/etc/fluent-bit.conf
