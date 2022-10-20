@@ -1,7 +1,7 @@
 version: "3" 
 services:
   prometheus:
-    image: prom/prometheus:v2.13.1
+    image: prom/prometheus:v2.35.0
     ports:
       - "9090:9090"
     volumes:
@@ -11,8 +11,18 @@ services:
       - --storage.tsdb.path=/prometheus
       - --web.console.libraries=/usr/share/prometheus/console_libraries
       - --web.console.templates=/usr/share/prometheus/consoles
-      - --storage.tsdb.max-block-duration=2h
-      - --storage.tsdb.min-block-duration=2h
+      - --storage.tsdb.retention.time=30d
+      # - --storage.tsdb.max-block-duration=2h
+      # - --storage.tsdb.min-block-duration=2h
+  # alertmanager2:
+  #   image: prom/alertmanager:v0.24.0
+  #   ports:
+  #     - "9094:9093"
+  #   command:
+  #     - "--config.file=/etc/alertmanager/alertmanager.yml"
+  #     - "--storage.path=/alertmanager"
+  #     - "--cluster.listen-address=0.0.0.0:9094"
+  #     - "--cluster.peer=alertmanager1:9094"
   store:
     image: thanosio/thanos:v0.28.1
     volumes:
